@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 空间限定名要唯一  一般使用文件全名 是 用点. 不是斜杠/ -->
+<mapper namespace="com.dt87.mapper.DepartmentMapper">
+     <!--查询部门信息-->
+    <select id="findAllDepartment" resultType="department">
+          select id, pid, title, open, remark, address, available, ordernum, createtime
+          from sys_dept
+          <where>
+              <if test="department != null">
+                  <if test="department.title!=null and department.title!= ''">
+                      and title like '%${department.title}%'
+                  </if>
+                  <if test="department.remark!=null and department.remark!= ''">
+                      and remark like '%${department.remark}%'
+                  </if>
+                  <if test="department.address!=null and department.address!= ''">
+                      and address like '%${department.address}%'
+                  </if>
+                  <if test="department.id!=null ">
+                      and id = #{department.id}
+                  </if>
+              </if>
+          </where>
+    </select>
+     <!--查询部门信息 是否有子节点 删除之前要判断-->
+    <select id="findAllDepartmentById" parameterType="department" resultType="department">
+        select * from sys_dept
+        where pid = #{department.id}
+    </select>
+    <!--修改部门信息-->
+    <update id="updateDepartment" parameterType="department">
+         update sys_dept set title = #{department.title},remark = #{department.remark},
+         address = #{department.address},pid = #{department.pid},open = #{department.open},
+         available = #{department.available},ordernum = #{department.ordernum},
+         createtime = #{department.createtime}
+         where id = #{department.id}
+    </update>
+    <!--添加部门信息-->
+    <insert id="addDepartment" parameterType="department">
+           insert into sys_dept(pid, title,open,remark, address
+           ,available,ordernum, createtime) values
+           (#{department.pid},#{department.title},#{department.open}
+           ,#{department.remark},#{department.address},#{department.available}
+           ,#{department.ordernum},#{department.createtime})
+    </insert>
+    <!---->
+    <select id="findMaxOrderNumber" resultType="Integer">
+         select Max(ordernum) from sys_dept
+    </select>
+    <!-- 删除部门信息-->
+    <delete id="deleteDepartment" parameterType="department">
+        delete from sys_dept where id = #{department.id}
+    </delete>
+    <!--批量删除部门信息-->
+    <delete id="deleteSelectDepartment" parameterType="list">
+        delete from sys_dept where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 空间限定名要唯一  一般使用文件全名 是 用点. 不是斜杠/ -->
+<mapper namespace="com.dt87.mapper.OutputMapper">
+    <!--查询退货 功能1 删除进货前查看是否有退货记录-->
+    <select id="findOutput" parameterType="output" resultType="output">
+           select id, providerid, paytype, outporttime,
+           operateperson, outportprice, number, remark,
+           goodsid, inportid
+           from bus_outport
+           <where>
+               <if test="output!=null">
+                   <if test="output.inportid!=null">
+                       inportid = #{output.inportid}
+                   </if>
+               </if>
+           </where>
+    </select>
+     <!--查询退货  自己界面查询所有退货-->
+    <select id="findAllOutput" parameterType="output" resultType="output">
+        select *
+        from bus_outport bo
+        inner join bus_goods bg on bg.id = bo.goodsid
+        inner join bus_provider bp on bp.id = bo.providerid
+        <where>
+            <if test="output!=null">
+                <if test="output.providerid!=null and output.providerid!=''">
+                    and bp.id = #{output.providerid}
+                </if>
+                <if test="output.goodsid!=null and output.goodsid!=''">
+                    and bg.id = #{output.goodsid}
+                </if>
+                <if test="output.id != null and output.id !=''">
+                    and bo.id = #{output.id}
+                </if>
+            </if>
+            <if test="startTime!=null">
+                and outporttime &gt;= #{startTime}
+            </if>
+            <if test="endTime!=null">
+                and outporttime &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+    <!--添加退货信息-->
+    <insert id="addOutput" parameterType="output">
+        insert into bus_outport(providerid, paytype, outporttime,
+        operateperson, outportprice, number, remark, goodsid, inportid)
+        values(#{output.providerid},#{output.paytype},#{output.outporttime},
+        #{output.operateperson},#{output.outportprice},#{output.number},
+        #{output.remark},#{output.goodsid},#{output.inportid})
+    </insert>
+</mapper>

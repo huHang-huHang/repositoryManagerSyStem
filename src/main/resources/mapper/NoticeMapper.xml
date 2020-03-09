@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 空间限定名要唯一  一般使用文件全名 是 用点. 不是斜杠/ -->
+<mapper namespace="com.dt87.mapper.NoticeMapper">
+    <!-- 查询公告-->
+    <select id="findAllNotice" resultType="notice">
+        select * from sys_notice
+        <where>
+            <if test="notice!=null and notice.id!=null">
+                id = #{notice.id}
+            </if>
+        </where>
+    </select>
+    <!--加分页-->
+    <!--<select id="findAllNoticePage" resultType="notice">
+          select * from sys_notice
+          <where>
+              <if test="notice!=null and notice.title!=null and notice.title!=''">
+                and title like '%${notice.title}%'
+              </if>
+              <if test="notice!=null and notice.createtime!=null and notice.createtime!=''">
+                  and createtime like '%${notice.createtime}%'
+              </if>
+          </where> limit #{page},#{limit}
+    </select>-->
+    <!--公告加分页-->
+    <!--大于等于，小于等于要转义  &gt;=  &lt;=-->
+    <select id="findAllNoticePage" resultType="notice">
+        select * from sys_notice
+        <where>
+            <if test="title!=null and title!=''">
+                and title like '%${title}%'
+            </if>
+            <if test="startTime!=null ">
+                and createtime &gt;= #{startTime}
+            </if>
+            <if test="endTime!=null ">
+                and createtime &lt;= #{endTime}
+            </if>
+        </where>limit #{page},#{limit}
+    </select>
+    <!--公告加分页对应的总条数-->
+    <!-- ***********************基本返回类型不写都报错 title!=''不能写-->
+    <select id="findAllNoticePageCount" resultType="int" >
+        select count(id) from sys_notice
+        <where>
+            <if test="title!=null">
+                and title like '%${title}%'
+            </if>
+            <if test="startTime!=null">
+                and createtime &gt;= #{startTime}
+            </if>
+            <if test="endTime!=null">
+                and createtime &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+     <!--删除公告-->
+    <delete id="deleteNoticeById">
+        delete from sys_notice where id = #{id}
+    </delete>
+    <!--添加公告-->
+    <insert id="addNotice" parameterType="notice">
+        insert into sys_notice(title,content,createtime,opername)
+        values (#{notice.title},#{notice.content},#{notice.createtime},#{notice.opername})
+    </insert>
+    <!--修改公告-->
+    <update id="updateNotice" parameterType="notice">
+        update sys_notice set title = #{notice.title},content = #{notice.content}
+        where id = #{notice.id}
+    </update>
+</mapper>

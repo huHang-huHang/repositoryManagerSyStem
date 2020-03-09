@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 空间限定名要唯一  一般使用文件全名 是 用点. 不是斜杠/ -->
+<mapper namespace="com.dt87.mapper.ProviderMapper">
+    <!--  and id = #{provider.id} 为了商品管理根据供应商id转成供应商名字查询-->
+    <select id="findAllProvider" resultType="provider" parameterType="provider">
+         select id, providername, zip, address, telephone, connectionperson, phone, bank, account, email, fax, available
+         from bus_provider
+    </select>
+
+</mapper>

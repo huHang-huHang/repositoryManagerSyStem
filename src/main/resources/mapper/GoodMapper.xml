@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 空间限定名要唯一  一般使用文件全名 是 用点. 不是斜杠/ -->
+<mapper namespace="com.dt87.mapper.GoodMapper">
+    <!--查询所有商品-->
+    <select id="findAllGood" resultType="good" parameterType="good">
+         SELECT bg.id, goodsname, produceplace, size, goodspackage,
+         productcode, promitcode, description, price, number,
+         dangernum, goodsimg, bg.available, bg.providerid,bp.id,bp.providername
+         FROM bus_goods bg
+         INNER JOIN bus_provider bp
+         ON  bg.providerid = bp.id
+         <where>
+             <if test="good!=null">
+                 <if test="good.providerid!=null and good.providerid!=''">
+                     and bp.id = #{good.providerid}
+                 </if>
+                 <if test="good.goodsname!=null and good.goodsname!=''">
+                     and goodsname like '%${good.goodsname}%'
+                 </if>
+                 <if test="good.productcode!=null and good.productcode!=''">
+                     and productcode like '%${good.productcode}%'
+                 </if>
+                 <if test="good.promitcode!=null and good.promitcode!=''">
+                     and promitcode like '%${good.promitcode}%'
+                 </if>
+                 <if test="good.description!=null and good.description!=''">
+                     and description like '%${good.description}%'
+                 </if>
+                 <if test="good.size!=null and good.size!=''">
+                     and size like '%${good.size}%'
+                 </if>
+             </if>
+         </where>
+    </select>
+    <!--查询商品 进货添加用的联动 根据商品中的providerid 查询所有商品名称-->
+    <select id="findAllGoodInput" resultType="good" parameterType="good">
+        SELECT bg.id, goodsname, produceplace, size, goodspackage,
+        productcode, promitcode, description, price, number,
+        dangernum, goodsimg, bg.available, providerid
+        FROM bus_goods bg
+        <where>
+            <if test="good!=null">
+                <if test="good.providerid!=null ">
+                    and providerid = #{good.providerid}
+                </if>
+            </if>
+        </where>
+    </select>
+    <!--查询商品 进货管理用根据商品id 查询商品名称-->
+    <!--更新商品-->
+    <update id="updateGood"  parameterType="good" >
+        update bus_goods set goodsname = #{good.goodsname},produceplace =  #{good.produceplace},
+        size = #{good.size},goodspackage = #{good.goodspackage},productcode = #{good.productcode},
+        promitcode = #{good.promitcode},description = #{good.description},price = #{good.price},
+        number = #{good.number},dangernum = #{good.dangernum},
+        goodsimg = #{good.goodsimg},available = #{good.available},providerid = #{good.providerid}
+        where id = #{good.id}
+    </update>
+    <!--添加商品信息-->
+    <insert id="addGood" parameterType="good">
+        insert into bus_goods (goodsname, produceplace, size, goodspackage,
+        productcode, promitcode, description, price, number,
+        dangernum, goodsimg, available, providerid)
+        values (#{good.goodsname}, #{good.produceplace},#{good.size},#{good.goodspackage},
+        #{good.productcode},#{good.promitcode},#{good.description},#{good.price},
+        #{good.number},#{good.dangernum},#{good.goodsimg},#{good.available},#{good.providerid})
+    </insert>
+    <!--删除商品信息-->
+    <delete id="deleteGood" parameterType="good" >
+        delete from bus_goods where id = #{good.id}
+    </delete>
+    <!--批量删除商品信息-->
+    <delete id="deleteSelectGood" parameterType="list">
+        delete from bus_goods where id in
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

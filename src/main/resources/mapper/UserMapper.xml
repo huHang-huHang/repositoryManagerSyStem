@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 空间限定名要唯一  一般使用文件全名 是 用点. 不是斜杠/ -->
+<mapper namespace="com.dt87.mapper.UserMapper">
+    <resultMap id="usersResultMap" type="user">
+          <id property="id" column="userId"></id>
+          <result property="name" column="name"></result>
+          <result property="loginname" column="loginname"></result>
+          <result property="address" column="address"></result>
+         <result property="pwd" column="pwd"></result>
+         <collection property="roleList" ofType="role">
+             <id property="id" column="roleId"></id>
+             <result property="name" column="roleName"></result>
+             <result property="remark" column="remark"></result>
+             <collection property="permissionList" ofType="permission">
+                 <id property="id" column="pId"></id>
+                 <result property="title" column="title"></result>
+                 <result property="percode" column="percode"></result>
+             </collection>
+         </collection>
+    </resultMap>
+    <!--根据登入名查询用户信息-->
+    <select id="findUser" resultType="user">
+         select id, name, loginname, address, sex, remark, pwd, deptid, hiredate, mgr, available, ordernum, type, imgpath, salt
+         from sys_user where loginname = #{loginname} and pwd = #{pwd}
+    </select>
+    <!--根据登入名查询用户信息（含角色，权限）-->
+    <select id="findPermissions" resultMap="usersResultMap">
+        select su.id as userId,su.name,loginname,address,pwd,sr.id as roleId,sr.name as roleName,sr.remark,sp.id as pId,title,percode
+        from sys_user su
+        left join sys_role_user sru on su.id = sru.uid
+        left join sys_role sr on sru.rid = sr.id
+        left join sys_role_permission srp on sr.id = srp.rid
+        left join sys_permission sp on srp.pid = sp.id
+        where loginname = #{loginname}
+    </select>
+</mapper>

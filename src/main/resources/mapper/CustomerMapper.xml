@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 空间限定名要唯一  一般使用文件全名 是 用点. 不是斜杠/ -->
+<mapper namespace="com.dt87.mapper.CustomerMapper">
+    <!--查询所有顾客-->
+    <select id="findAllCustomer" resultType="customer">
+        select id, customername, zip, address, telephone, connectionperson,
+        phone, bank, account, email, fax, available from bus_customer
+        <where>
+            <if test="customer!=null">
+                <if test="customer.customername!=null and customer.customername!=''">
+                    and customername like '%${customer.customername}%'
+                </if>
+                <if test="customer.telephone!=null and customer.telephone!=''">
+                    and telephone like '%${customer.telephone}%'
+                </if>
+                <if test="customer.connectionperson!=null and customer.connectionperson!=''">
+                    and connectionperson like '%${customer.connectionperson}%'
+                </if>
+            </if>
+        </where>
+    </select>
+    <!--修改顾客信息-->
+    <update id="updateCustomer" parameterType="customer">
+        update bus_customer
+        <if test="customer!=null">set
+            <if test="customer.customername!=null and customer.customername!=''">
+                customername= #{customer.customername},
+            </if>
+            <if test="customer.zip!=null and customer.zip!=''">
+                zip = #{customer.zip},
+            </if>
+            <if test="customer.address!=null and customer.address!=''">
+                address = #{customer.address},
+            </if>
+            <if test="customer.telephone!=null and customer.telephone!=''">
+                telephone = #{customer.telephone},
+            </if>
+            <if test="customer.connectionperson!=null and customer.connectionperson!=''">
+                connectionperson = #{customer.connectionperson},
+            </if>
+            <if test="customer.phone!=null and customer.phone!=''">
+                phone = #{customer.phone},
+            </if>
+            <if test="customer.bank!=null and customer.bank!=''">
+                bank = #{customer.bank},
+            </if>
+            <if test="customer.account!=null and customer.account!=''">
+                account = #{customer.account},
+            </if>
+            <if test="customer.email!=null and customer.email!=''">
+                email = #{customer.email},
+            </if>
+            <if test="customer.fax!=null and customer.fax!=''">
+                fax = #{customer.fax},
+            </if>
+            <if test="customer.available!=null and customer.available!=''">
+                available = #{customer.available}
+            </if>
+        </if>
+
+        where id = #{customer.id}
+    </update>
+    <!--添加客户-->
+    <insert id="addCustomer" parameterType="customer">
+        insert into bus_customer(customername, zip, address, telephone, connectionperson,
+           phone, bank, account, email, fax, available)
+           values (#{customer.customername},#{customer.zip},#{customer.address},
+           #{customer.telephone},#{customer.connectionperson},#{customer.phone},#{customer.bank},
+           #{customer.account},#{customer.email},fax = #{customer.fax},#{customer.available})
+    </insert>
+     <!--删除客户-->
+    <delete id="deleteCustomer" parameterType="customer">
+        delete from bus_customer where id = #{customer.id}
+    </delete>
+    <!--批量删除客户-->
+    <delete id="deleteSelectCustomer" parameterType="list">
+        delete from bus_customer where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

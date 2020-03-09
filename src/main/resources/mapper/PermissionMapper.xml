@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 空间限定名要唯一  一般使用文件全名 是 用点. 不是斜杠/ -->
+<mapper namespace="com.dt87.mapper.PermissionMapper">
+    <!--一级目录，具体的大模块-->
+    <select id="findMenu" resultType="permission">
+         select * from sys_permission where type = 'menu' and available = 1
+    </select>
+    <!--查询权限 菜单管理界面用 左侧文件目录-->
+    <select id="findAllMenu" parameterType="permission" resultType="permission">
+        select * from  sys_permission  where type = 'menu' and available = 1
+        <if test="permission!=null">
+            <if test="permission.id!= null">
+                and id = #{permission.id}
+            </if>
+        </if>
+    </select>
+    <!--查询所有权限总条数 菜单用 -->
+    <select id="findAllPermissionCount" parameterType="permission" resultType="Integer">
+           SELECT COUNT(id) FROM sys_permission WHERE TYPE = 'menu' AND available = 1
+
+                <if test="permission != null" >
+                    <if test="permission.title != null and permission.title != ''">
+                         and title like '%${permission.title}%'
+                    </if>
+                    <if test="permission.id != null ">
+                         and id = #{permission.id}
+                    </if>
+                </if>
+
+    </select>
+    <!--查询所有权限  菜单界面用-->
+    <select id="findAllPermission" parameterType="permission" resultType="permission">
+        select id, pid, type, title, percode, icon, href, target, open, ordernum, available
+        from sys_permission WHERE TYPE = 'menu' AND available = 1
+
+            <if test="permission != null" >
+                <if test="permission.title != null and permission.title != ''">
+                    and title like '%${permission.title}%'
+                </if>
+                <if test="permission.id != null ">
+                    and id = #{permission.id}
+                </if>
+            </if>
+
+        limit #{page},#{limit}
+    </select>
+    <!--查询所有权限 权限管理界面用 -->
+    <select id="findPermission" parameterType="permission" resultType="permission">
+        select id, pid, type, title, percode, icon, href, target, open, ordernum, available
+        from sys_permission WHERE TYPE = 'permission' AND available = 1
+        <if test="permission != null" >
+            <if test="permission.title != null and permission.title != ''">
+                and title like '%${permission.title}%'
+            </if>
+            <if test="permission.percode != null and permission.percode != ''">
+                and percode like '%${permission.percode}%'
+            </if>
+            <if test="permission.id != null ">
+                and pid = #{permission.id}
+            </if>
+        </if>
+
+        limit #{page},#{limit}
+    </select>
+    <!--查询所有权限总条数  权限管理界面用-->
+    <select id="findPermissionCount" parameterType="permission" resultType="Integer">
+        SELECT COUNT(id) FROM sys_permission WHERE TYPE = 'permission' AND available = 1
+
+        <if test="permission != null" >
+            <if test="permission.title != null and permission.title != ''">
+                and title like '%${permission.title}%'
+            </if>
+            <if test="permission.percode != null and permission.percode != ''">
+                and percode like '%${permission.percode}%'
+            </if>
+            <if test="permission.id != null ">
+                and pid = #{permission.id}
+            </if>
+        </if>
+
+    </select>
+    <!--//查询权限 最大排序码-->
+    <select id="findPermissionMaxOrderNum" resultType="Integer">
+        select max(ordernum) from sys_permission
+    </select>
+    <!--添加权限-->
+    <insert id="addPermission" parameterType="permission">
+        insert into sys_permission(pid, type, title, percode,
+        ordernum, available)
+         values (#{permission.pid},#{permission.type},#{permission.title}
+         ,#{permission.percode},#{permission.ordernum},#{permission.available})
+    </insert>
+    <!--修改权限-->
+    <update id="updatePermission" parameterType="permission">
+        update sys_permission set
+        pid = #{permission.pid},title = #{permission.title},percode = #{permission.percode},
+        ordernum = #{permission.ordernum},available = #{permission.available}
+        where id = #{permission.id}
+    </update>
+    <!--删除权限-->
+    <delete id="deletePermission" parameterType="permission">
+        delete from sys_permission where id = #{permission.id}
+    </delete>
+</mapper>

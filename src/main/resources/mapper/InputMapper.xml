@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 空间限定名要唯一  一般使用文件全名 是 用点. 不是斜杠/ -->
+<mapper namespace="com.dt87.mapper.InputMapper">
+    <!--查询所有进货-->
+    <select id="findAllInput" resultType="input" parameterType="input">
+        SELECT bi.id, paytype, inporttime, operateperson, bi.number, remark,
+        inportprice, bi.providerid, goodsid,bg.id,bg.goodsname,bg.size,bp.providername,bp.id
+        FROM bus_inport  bi
+        INNER JOIN bus_goods bg ON bi.goodsid = bg.id
+        INNER JOIN bus_provider bp ON bi.providerid = bp.id
+        <where>
+            <if test="input!=null">
+                <if test="input.providerid!=null and input.providerid!=''">
+                    and bp.id = #{input.providerid}
+                </if>
+                <if test="input.goodsid!=null and input.goodsid!=''">
+                    and bg.id = #{input.goodsid}
+                </if>
+                <if test="input.id != null and input.id !=''">
+                    and bi.id = #{input.id}
+                </if>
+            </if>
+            <if test="startTime!=null">
+                and inporttime &gt;= #{startTime}
+            </if>
+            <if test="endTime!=null">
+                and inporttime &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+     <!--更新进货-->
+    <update id="updateInput" parameterType="input">
+        update bus_inport set
+         paytype = #{input.paytype},inporttime = #{input.inporttime},
+         operateperson = #{input.operateperson},number = #{input.number},remark = #{input.remark},
+         inportprice = #{input.inportprice},providerid = #{input.providerid},
+         goodsid = #{input.goodsid}
+         where id = #{input.id}
+    </update>
+    <!--添加进货-->
+    <insert id="addInput" parameterType="input">
+       insert into bus_inport(paytype,inporttime,operateperson,
+       number,remark,inportprice,providerid,goodsid)
+       values (#{input.paytype},#{input.inporttime},#{input.operateperson},#{input.number},
+       #{input.remark},#{input.inportprice},#{input.providerid},#{input.goodsid})
+    </insert>
+    <!--删除进货-->
+    <delete id="deleteInput" parameterType="input">
+        delete from bus_inport where id = #{input.id}
+    </delete>
+    <!--查询进货信息根据进货id 给退货管理用-->
+    <select id="findInput" resultType="input">
+        select id, paytype, inporttime, operateperson,
+        number, remark, inportprice, providerid, goodsid
+        from bus_inport
+        where id = #{inportid}
+    </select>
+</mapper>
